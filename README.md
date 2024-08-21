@@ -14,7 +14,7 @@ And find the vignettes at: https://
 
 To include the vignettes during installing the package:
 ```
-devtools::install_github("wdl2459/ZINQ-v2")
+devtools::install_github("")
 ```
 To view the vignettes, from the `R` terminal, type: 
 ```
