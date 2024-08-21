@@ -1,2 +1,3 @@
 These are the core codes for ZINQ-L but un-organized.
 The package file is util11.R
+Ktx_data_process.R is the one we run for simulation purpose. We select four taxa for sim1, and taxa for sim2 based on this script.
