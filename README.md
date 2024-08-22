@@ -8,7 +8,7 @@ The R package developed for XXX et al. (2021). ZINQ-L: A Zero-Inflated Quantile 
 
 From an `R` session, install `ZINQ-L` by:
 ```
-devtools::install_github()
+devtools::install_github('https://github.com/AlbertSL98/ZINQ-L')
 ```
 And find the vignettes at: https://
 
