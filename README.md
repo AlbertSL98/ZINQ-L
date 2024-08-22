@@ -14,16 +14,20 @@ And find the vignettes at: https://
 
 To include the vignettes during installing the package:
 ```
-devtools::install_github("")
+devtools::install_github('https://github.com/AlbertSL98/ZINQ-L', build_vignettes = TRUE)
 ```
 To view the vignettes, from the `R` terminal, type: 
 ```
-browseVignettes("")
+browseVignettes("ZINQL")
+```
+or
+```
+vignette("ZINQL_Tutorial", package = "ZINQL")
 ```
 
 From an `R` session, library the package by:
 ```
-library()
+library(ZINQL)
 ```
 
 
