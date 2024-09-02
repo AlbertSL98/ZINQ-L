@@ -31,4 +31,4 @@ library(ZINQL)
 ```
 
 
-Details can be found in the manual: https://github.com/.
+Details can be found in the manual: https://github.com/AlbertSL98/ZINQ-L/blob/main/ZINQL.pdf.
