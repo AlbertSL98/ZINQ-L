@@ -10,7 +10,7 @@ From an `R` session, install `ZINQ-L` by:
 ```
 devtools::install_github('https://github.com/AlbertSL98/ZINQ-L')
 ```
-And find the vignettes at: https://
+And find the vignettes at: [https://albertsl98.github.io/ZINQ-L-Tutorial/]
 
 To include the vignettes during installing the package:
 ```
