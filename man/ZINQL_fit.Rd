@@ -44,7 +44,7 @@ The function returns a list:
 references
 }
 \author{
-The package is developed by Shuai Li, Runzhe Li, Wodan Ling and Ni Zhao.
+The package is developed by Shuai Li, Runzhe Li, supervised by Wodan Ling and Ni Zhao.
 }
 
 \seealso{

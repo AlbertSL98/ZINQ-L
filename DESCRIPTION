@@ -1,12 +1,11 @@
 Package: ZINQL
 Type: Package
-Title: What the Package Does (Title Case)
+Title: A Zero-Inflated Quantile Approach for Differential Abundance Analysis of Longitudinal Microbiome Data
 Version: 1.0
-Author: Shuai Li, Runzhe Li, Wodan Ling and Ni Zhao
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: ???
+Author: Shuai Li, Runzhe Li
+Maintainer: Shuai Li <sli201@jh.edu>
+Description: This package conducts association testing between individual taxa of microbiome data and clinical variable of interest, while adjusting for other covariates and longitudinal effect.
+License: GPL (>=3).
 Encoding: UTF-8
 LazyData: true
 Imports: lme4, quantreg, Matrix, MASS, dplyr
