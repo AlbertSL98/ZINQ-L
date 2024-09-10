@@ -1,9 +1,5 @@
 # ZINQ-L: A Zero-Inflated Quantile Approach for Differential Abundance Analysis of Longitudinal Microbiome Data
 
-## Overview
-
-The R package developed for XXX et al. (2021). ZINQ-L: A Zero-Inflated Quantile Approach for Differential Abundance Analysis of Longitudinal Microbiome Data. Frontier XXX
-
 ## Instructions for use
 
 From an `R` session, install `ZINQ-L` by:
