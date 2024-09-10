@@ -1,0 +1,120 @@
+---
+title: "ZINQL_Tutorial"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ZINQL_Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Load the sample data and import the package. In the `otu.tab`, each row represents a sample and each column corresponds to the abundance of a taxon. The metadata includes Abx (the primary covariate of interest), age (a clinical variable to be adjusted for), and study (an ID indicator accounting for the longitudinal effect).
+
+```{r}
+library(ZINQL)
+
+data(data_example)
+
+head(metadata)
+
+head(otu.tab[,1:5])
+```
+
+# ZINQ-L on individual taxon level
+
+Below, we demonstrate how to run ZINQ-L at the individual taxon level. Suppose we want to test whether Abx is associated with the abundance of Blautia in the sample data, while adjusting for age and accounting for the correlation introduced by study.
+
+```{r}
+y.Blautia = otu.tab[,'Blautia']
+re = ZINQL_fit(y=y.Blautia, meta=metadata, formula=y~Abx+age+(1|study),
+          C='Abx', seed=2024, taus=c(0.1, 0.25, 0.5, 0.75, 0.9),
+          method = 'Both')
+re
+```
+
+Since ZINQ-L is required to try both MinP and truncated Cauchy for P-value combination, there are two P-values in `re$Final_P_value`. The user can retrieve either one. The `re$model` attribute indicates whether the test was conducted successfully. Additionally, `re$Intermediate_P_value` returns all the intermediate P-values used in the combination process.
+
+Below, we provide an example where the test is not successfully conducted due to an insufficient number of positive `y` values. In this case, `re$model` returns 'None'. The user can use this as an indicator to determine whether the model was implemented successfully.
+
+```{r}
+y.Blautia = otu.tab[,'Blautia']
+y.Blautia[1:28] = 0
+re = ZINQL_fit(y=y.Blautia, meta=metadata, formula=y~Abx+age+(1|study),
+          C='Abx', seed=2024, taus=c(0.1, 0.25, 0.5, 0.75, 0.9),
+          method = 'Both')
+re
+```
+
+The user can also choose to run only the truncated Cauchy or only the MinP method by modifying the `method` attribute in `ZINQL_fit`. In this scenario, `re$Final_P_value` will return a single p-value, and `re$model` will indicate which method was used. See the following example.
+
+```{r}
+y.Blautia = otu.tab[,'Blautia']
+
+#MinP
+re = ZINQL_fit(y=y.Blautia, meta=metadata, formula=y~Abx+age+(1|study),
+          C='Abx', seed=2024, taus=c(0.1, 0.25, 0.5, 0.75, 0.9),
+          method = 'MinP')
+re
+
+#truncted Cauchy
+re = ZINQL_fit(y=y.Blautia, meta=metadata, formula=y~Abx+age+(1|study),
+          C='Abx', seed=2024, taus=c(0.1, 0.25, 0.5, 0.75, 0.9),
+          method = 'Cauchy')
+re
+```
+
+# ZINQ-L on whole OTU table
+
+ZINQ-L is designed to perform tests at the individual taxon level. If the user wishes to analyze the entire OTU table and apply FDR control, sample code is provided below.
+
+In this case, each row of `otu.tab` represents a sample, and each column corresponds to the abundance of a taxon.
+
+
+```{r,message=FALSE, warning=FALSE, results='hide'}
+#In this segment we store important results from ZINQ-L
+model.use = c()
+set.seed(2024)
+## quantile test 
+taus = c(0.1, 0.25, 0.5, 0.75, 0.9)
+d.result = data.frame(`ZINQL_MinP`=1, `ZINQL_Cauchy`=1)
+model.use = c()
+for(t in 1:ncol(otu.tab)){
+  print(paste('taxa', t, colnames(otu.tab)[t]))
+  yt = otu.tab[, t]
+  result.full = suppressMessages(try(
+    ZINQL_fit(y=yt,formula=y~Abx+age+(1|study),C='Abx',
+                          taus=taus, seed=2024, 
+                          meta=metadata, method='Both')
+  ))
+  if ('try-error' %in% class(result.full)){
+    result = rep(NA, 2)
+    model.use = c(model.use,NA)
+  } else{
+    result = result.full$`Final_P_value`
+    model.use = c(model.use,result.full$`model`)
+  }
+  d.result = rbind(d.result,result)
+}
+
+d.result = d.result[2:nrow(d.result),]
+d.result$model.use = model.use
+
+#we should filter out tests with model.use as None
+d.result = d.result[which(!(d.result$model.use=='None')),]
+
+#conduct FDR
+d.result$ZINQL_MinP_FDR = p.adjust(d.result$ZINQL_MinP, method = 'fdr')
+d.result$ZINQL_Cauchy_FDR = p.adjust(d.result$ZINQL_Cauchy, method = 'fdr')
+```
+
+```{r}
+head(d.result)
+```
+
+Then, `ZINQL_MinP_FDR` and `ZINQL_Cauchy_FDR` store the P-values from the test after applying FDR correction.

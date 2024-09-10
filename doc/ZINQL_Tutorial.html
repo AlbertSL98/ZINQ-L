@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>ZINQL_Tutorial</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">ZINQL_Tutorial</h1>
+
+
+
+<p>Load the sample data and import the package. In the
+<code>otu.tab</code>, each row represents a sample and each column
+corresponds to the abundance of a taxon. The metadata includes Abx (the
+primary covariate of interest), age (a clinical variable to be adjusted
+for), and study (an ID indicator accounting for the longitudinal
+effect).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ZINQL)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; Warning: replacing previous import &#39;MASS::select&#39; by &#39;dplyr::select&#39; when</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; loading &#39;ZINQL&#39;</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">data</span>(data_example)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">head</span>(metadata)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt;                 X1 Abx      age study</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; subject1_visit1  1   0 1.513526     1</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; subject1_visit2  1   0 1.610050     1</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; subject1_visit3  1   0 1.706574     1</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; subject2_visit1  1   0 1.092414     2</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; subject2_visit2  1   0 1.188938     2</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; subject2_visit3  1   0 1.285462     2</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="fu">head</span>(otu.tab[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt;                 Blautia Fusicatenibacter Lachnoclostridium Roseburia</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; subject1_visit1    2527              489               193        65</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; subject1_visit2    2489              484               190        62</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; subject1_visit3    2458              494               185         0</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; subject2_visit1     478                7                21         1</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; subject2_visit2    1821                0               145         0</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; subject2_visit3    1728                0               138         0</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt;                 Lachnospiraceae_unspecified</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt; subject1_visit1                           0</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt; subject1_visit2                         320</span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; subject1_visit3                         299</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; subject2_visit1                           0</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt; subject2_visit2                          92</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co">#&gt; subject2_visit3                           0</span></span></code></pre></div>
+<div id="zinq-l-on-individual-taxon-level" class="section level1">
+<h1>ZINQ-L on individual taxon level</h1>
+<p>Below, we demonstrate how to run ZINQ-L at the individual taxon
+level. Suppose we want to test whether Abx is associated with the
+abundance of Blautia in the sample data, while adjusting for age and
+accounting for the correlation introduced by study.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>y.Blautia <span class="ot">=</span> otu.tab[,<span class="st">&#39;Blautia&#39;</span>]</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>re <span class="ot">=</span> <span class="fu">ZINQL_fit</span>(<span class="at">y=</span>y.Blautia, <span class="at">meta=</span>metadata, <span class="at">formula=</span>y<span class="sc">~</span>Abx<span class="sc">+</span>age<span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>study),</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>          <span class="at">C=</span><span class="st">&#39;Abx&#39;</span>, <span class="at">seed=</span><span class="dv">2024</span>, <span class="at">taus=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>          <span class="at">method =</span> <span class="st">&#39;Both&#39;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Conducting Logistics mixed effect Regression.&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;All the ys are positive, thus we manually set P-value for Logistics mixed effect Regression as 1!&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Conducting Quantile mixed effect Regression.&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>re</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; $Final_P_value</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;   ZINQL_MinP ZINQL_Cauchy </span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;    0.2880104    0.2411009 </span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; $model</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Both&quot;</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; $Intermediate_P_value</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; Logistics_LRT  Quantile_0.1 Quantile_0.25  Quantile_0.5 Quantile_0.75 </span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;    1.00000000    0.60695370    0.07184258    0.39201827    0.50856274 </span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;  Quantile_0.9 </span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt;    0.25719187</span></span></code></pre></div>
+<p>Since ZINQ-L is required to try both MinP and truncated Cauchy for
+P-value combination, there are two P-values in
+<code>re$Final_P_value</code>. The user can retrieve either one. The
+<code>re$model</code> attribute indicates whether the test was conducted
+successfully. Additionally, <code>re$Intermediate_P_value</code> returns
+all the intermediate P-values used in the combination process.</p>
+<p>Below, we provide an example where the test is not successfully
+conducted due to an insufficient number of positive <code>y</code>
+values. In this case, <code>re$model</code> returns ‘None’. The user can
+use this as an indicator to determine whether the model was implemented
+successfully.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>y.Blautia <span class="ot">=</span> otu.tab[,<span class="st">&#39;Blautia&#39;</span>]</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>y.Blautia[<span class="dv">1</span><span class="sc">:</span><span class="dv">28</span>] <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>re <span class="ot">=</span> <span class="fu">ZINQL_fit</span>(<span class="at">y=</span>y.Blautia, <span class="at">meta=</span>metadata, <span class="at">formula=</span>y<span class="sc">~</span>Abx<span class="sc">+</span>age<span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>study),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>          <span class="at">C=</span><span class="st">&#39;Abx&#39;</span>, <span class="at">seed=</span><span class="dv">2024</span>, <span class="at">taus=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>          <span class="at">method =</span> <span class="st">&#39;Both&#39;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;There are only 2 positive values in y, while ZINQ-L requires at least 5 positive values. The package will return NA.&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>re</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; $Final_P_value</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; [1] NA NA</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; $model</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;None&quot;</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; $Intermediate_P_value</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; [1] NA NA NA NA NA NA</span></span></code></pre></div>
+<p>The user can also choose to run only the truncated Cauchy or only the
+MinP method by modifying the <code>method</code> attribute in
+<code>ZINQL_fit</code>. In this scenario, <code>re$Final_P_value</code>
+will return a single p-value, and <code>re$model</code> will indicate
+which method was used. See the following example.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>y.Blautia <span class="ot">=</span> otu.tab[,<span class="st">&#39;Blautia&#39;</span>]</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#MinP</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>re <span class="ot">=</span> <span class="fu">ZINQL_fit</span>(<span class="at">y=</span>y.Blautia, <span class="at">meta=</span>metadata, <span class="at">formula=</span>y<span class="sc">~</span>Abx<span class="sc">+</span>age<span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>study),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>          <span class="at">C=</span><span class="st">&#39;Abx&#39;</span>, <span class="at">seed=</span><span class="dv">2024</span>, <span class="at">taus=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>),</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>          <span class="at">method =</span> <span class="st">&#39;MinP&#39;</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Conducting Logistics mixed effect Regression.&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;All the ys are positive, thus we manually set P-value for Logistics mixed effect Regression as 1!&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Conducting Quantile mixed effect Regression.&quot;</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>re</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; $Final_P_value</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; ZINQL_MinP </span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt;  0.2880104 </span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; $model</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ZINQL_MinP&quot;</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; $Intermediate_P_value</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; Logistics_LRT  Quantile_0.1 Quantile_0.25  Quantile_0.5 Quantile_0.75 </span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt;    1.00000000    0.60695370    0.07184258    0.39201827    0.50856274 </span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt;  Quantile_0.9 </span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt;    0.25719187</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#truncted Cauchy</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>re <span class="ot">=</span> <span class="fu">ZINQL_fit</span>(<span class="at">y=</span>y.Blautia, <span class="at">meta=</span>metadata, <span class="at">formula=</span>y<span class="sc">~</span>Abx<span class="sc">+</span>age<span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>study),</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>          <span class="at">C=</span><span class="st">&#39;Abx&#39;</span>, <span class="at">seed=</span><span class="dv">2024</span>, <span class="at">taus=</span><span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>),</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>          <span class="at">method =</span> <span class="st">&#39;Cauchy&#39;</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Conducting Logistics mixed effect Regression.&quot;</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; [1] &quot;All the ys are positive, thus we manually set P-value for Logistics mixed effect Regression as 1!&quot;</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Conducting Quantile mixed effect Regression.&quot;</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>re</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; $Final_P_value</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; ZINQL_Cauchy </span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt;    0.2411009 </span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt; $model</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ZINQL_Cauchy&quot;</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; $Intermediate_P_value</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; Logistics_LRT  Quantile_0.1 Quantile_0.25  Quantile_0.5 Quantile_0.75 </span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt;    1.00000000    0.60695370    0.07184258    0.39201827    0.50856274 </span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt;  Quantile_0.9 </span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a><span class="co">#&gt;    0.25719187</span></span></code></pre></div>
+</div>
+<div id="zinq-l-on-whole-otu-table" class="section level1">
+<h1>ZINQ-L on whole OTU table</h1>
+<p>ZINQ-L is designed to perform tests at the individual taxon level. If
+the user wishes to analyze the entire OTU table and apply FDR control,
+sample code is provided below.</p>
+<p>In this case, each row of <code>otu.tab</code> represents a sample,
+and each column corresponds to the abundance of a taxon.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">#In this segment we store important results from ZINQ-L</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>model.use <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2024</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="do">## quantile test </span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>taus <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>d.result <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="st">`</span><span class="at">ZINQL_MinP</span><span class="st">`</span><span class="ot">=</span><span class="dv">1</span>, <span class="st">`</span><span class="at">ZINQL_Cauchy</span><span class="st">`</span><span class="ot">=</span><span class="dv">1</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>model.use <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(otu.tab)){</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&#39;taxa&#39;</span>, t, <span class="fu">colnames</span>(otu.tab)[t]))</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  yt <span class="ot">=</span> otu.tab[, t]</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  result.full <span class="ot">=</span> <span class="fu">suppressMessages</span>(<span class="fu">try</span>(</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="fu">ZINQL_fit</span>(<span class="at">y=</span>yt,<span class="at">formula=</span>y<span class="sc">~</span>Abx<span class="sc">+</span>age<span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>study),<span class="at">C=</span><span class="st">&#39;Abx&#39;</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>                          <span class="at">taus=</span>taus, <span class="at">seed=</span><span class="dv">2024</span>, </span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>                          <span class="at">meta=</span>metadata, <span class="at">method=</span><span class="st">&#39;Both&#39;</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  ))</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">&#39;try-error&#39;</span> <span class="sc">%in%</span> <span class="fu">class</span>(result.full)){</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    result <span class="ot">=</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">2</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    model.use <span class="ot">=</span> <span class="fu">c</span>(model.use,<span class="cn">NA</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  } <span class="cf">else</span>{</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>    result <span class="ot">=</span> result.full<span class="sc">$</span><span class="st">`</span><span class="at">Final_P_value</span><span class="st">`</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>    model.use <span class="ot">=</span> <span class="fu">c</span>(model.use,result.full<span class="sc">$</span><span class="st">`</span><span class="at">model</span><span class="st">`</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>  }</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>  d.result <span class="ot">=</span> <span class="fu">rbind</span>(d.result,result)</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>}</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>d.result <span class="ot">=</span> d.result[<span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(d.result),]</span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>d.result<span class="sc">$</span>model.use <span class="ot">=</span> model.use</span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#we should filter out tests with model.use as None</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>d.result <span class="ot">=</span> d.result[<span class="fu">which</span>(<span class="sc">!</span>(d.result<span class="sc">$</span>model.use<span class="sc">==</span><span class="st">&#39;None&#39;</span>)),]</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#conduct FDR</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>d.result<span class="sc">$</span>ZINQL_MinP_FDR <span class="ot">=</span> <span class="fu">p.adjust</span>(d.result<span class="sc">$</span>ZINQL_MinP, <span class="at">method =</span> <span class="st">&#39;fdr&#39;</span>)</span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a>d.result<span class="sc">$</span>ZINQL_Cauchy_FDR <span class="ot">=</span> <span class="fu">p.adjust</span>(d.result<span class="sc">$</span>ZINQL_Cauchy, <span class="at">method =</span> <span class="st">&#39;fdr&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">head</span>(d.result)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;   ZINQL_MinP ZINQL_Cauchy model.use ZINQL_MinP_FDR ZINQL_Cauchy_FDR</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; 2  0.2880104    0.2411009      Both      0.9720284        0.9867534</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; 3  0.7476110    0.9800878      Both      0.9720284        0.9867534</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; 4  0.7049797    0.8443199      Both      0.9720284        0.9867534</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; 5  0.3794447    0.8285806      Both      0.9720284        0.9867534</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; 6  0.1080278    0.7423629      Both      0.8585050        0.9867534</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; 7  0.8978710    0.6107183      Both      0.9720284        0.9867534</span></span></code></pre></div>
+<p>Then, <code>ZINQL_MinP_FDR</code> and <code>ZINQL_Cauchy_FDR</code>
+store the P-values from the test after applying FDR correction.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
