@@ -1,6 +1,9 @@
 # ZINQ-L: A Zero-Inflated Quantile Approach for Differential Abundance Analysis of Longitudinal Microbiome Data
 The manuscript is publicly available at https://www.frontiersin.org/journals/genetics/articles/10.3389/fgene.2024.1494401/full.
 
+To cite our manuscript:
+Li S, Li R, Lee JR, Zhao N and Ling W (2025) ZINQ-L: a zero-inflated quantile approach for differential abundance analysis of longitudinal microbiome data. _Front. Genet._ 15:1494401. doi: 10.3389/fgene.2024.1494401
+
 ## Instructions for use
 
 From an `R` session, install `ZINQ-L` by:
